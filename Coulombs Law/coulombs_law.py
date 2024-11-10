@@ -57,3 +57,60 @@ class CoulombsLaw(Scene):
         self.wait(2)
         self.play(FadeOut(text), run_time=2)
         self.wait(1)
+
+
+class ForceDistanceRelation(Scene):
+    @staticmethod
+    def force_function(r):
+        k = 1  # Assuming k (1/4πε₀) as 1 for simplicity
+        return k / r ** 2
+
+    def construct(self):
+        # Step 1: Display the Coulomb's Law formula
+        coulomb_law_equation = MathTex(r"F = \frac{1}{4\pi\epsilon_{o}} \frac{q_1 \times q_2}{r^2}")
+        self.play(Write(coulomb_law_equation))
+        self.wait(1)
+
+        # Step 2: Substitute values for the formula
+        substituted_equation = MathTex(r"F = \frac{1}{4\times 3.14159 \times 8.85 \times 10^{-12}} \frac{(1) \times (1)}{r^2}").scale(1.5)
+        substituted_equation.move_to(coulomb_law_equation)
+
+        # Animate the substitution of values (q1 = q2 = 1)
+        self.play(Transform(coulomb_law_equation, substituted_equation))
+        self.wait(5)
+
+        self.play(
+            FadeOut(coulomb_law_equation),
+            FadeOut(substituted_equation)
+        )
+
+        self.wait(1)
+
+        axes = Axes(
+            x_range=[0.1, 10, 1],
+            y_range=[0, 20, 2],
+            x_length=7,
+            y_length=5,
+            x_axis_config={"include_numbers": True, "font_size": 24},
+            y_axis_config={"include_numbers": True, "font_size": 24},
+            axis_config={"color": BLUE},
+            tips=True
+        )
+
+        x_label = MathTex("r").next_to(axes.x_axis, RIGHT)
+        y_label = MathTex("F").next_to(axes.y_axis, UP)
+
+        force_graph = axes.plot(ForceDistanceRelation.force_function, color=YELLOW, x_range=[0.1, 10])
+        graph_label = MathTex("F \\propto \\frac{1}{r^2}").next_to(force_graph, UP, buff=0.5)
+        self.play(Create(axes), Write(x_label), Write(y_label))
+        self.play(Create(force_graph), Write(graph_label))
+
+        # Adding some sample points for emphasis
+        # sample_points = [
+        #     Dot(axes.coords_to_point(r, ForceDistanceRelation.force_function(r)), color=RED)
+        #     for r in [0.5, 1, 2, 3, 4]
+        # ]
+        # self.play(*[FadeIn(point) for point in sample_points])
+
+        # Display the graph
+        self.wait(2)
